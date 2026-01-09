@@ -1,0 +1,70 @@
+import { Test, TestingModule } from '@nestjs/testing';
+import { INestMicroservice, ValidationPipe } from '@nestjs/common';
+import { Transport, ClientsModule, ClientProxy } from '@nestjs/microservices';
+import { AuthenticationModule } from './../src/authentication.module';
+import { CreateUserDto, LoginDto } from '@app/common';
+
+describe('AuthenticationModule (e2e)', () => {
+  let app: INestMicroservice;
+  let client: ClientProxy;
+
+  beforeAll(async () => {
+    const moduleFixture: TestingModule = await Test.createTestingModule({
+      imports: [
+        AuthenticationModule,
+        ClientsModule.register([
+          {
+            name: 'AUTH_CLIENT',
+            transport: Transport.TCP,
+            options: {
+              host: '0.0.0.0',
+              port: 3002,
+            },
+          },
+        ]),
+      ],
+    }).compile();
+
+    app = moduleFixture.createNestMicroservice({
+      transport: Transport.TCP,
+      options: {
+        host: '0.0.0.0',
+        port: 3002,
+      },
+    });
+
+    // Ensure validation is applied as in main.ts
+    app.useGlobalPipes(new ValidationPipe({ whitelist: true }));
+    
+    await app.listen();
+    
+    client = app.get('AUTH_CLIENT');
+    await client.connect();
+  });
+
+  afterAll(async () => {
+    await app.close();
+    if (client) {
+        client.close();
+    }
+  });
+
+  it('should create a user and login', async () => {
+    const email = `test-${Date.now()}@example.com`;
+    const password = 'password123';
+    const name = 'Test User';
+    const createUserDto: CreateUserDto = { email, password, name };
+
+    // Create User
+    const user = await client.send({ cmd: 'create_user' }, createUserDto).toPromise();
+    expect(user).toBeDefined();
+    expect(user.email).toBe(email);
+    expect(user.password).toBeUndefined();
+
+    // Login
+    const loginDto: LoginDto = { email, password };
+    const token = await client.send({ cmd: 'login' }, loginDto).toPromise();
+    expect(token).toBeDefined();
+    expect(token.access_token).toBeDefined();
+  });
+});
