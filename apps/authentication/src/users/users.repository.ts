@@ -1,14 +1,12 @@
 import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
-import { Model } from 'mongoose';
-import { CreateUserDto, LoggerService } from '@app/common';
+import { Model, mongo } from 'mongoose';
 import { User, UserDocument } from './schemas/user.schema';
 
 @Injectable()
 export class UsersRepository {
   constructor(
-    @InjectModel(User.name) private userModel: Model<UserDocument>,
-    private readonly logger: LoggerService,
+    @InjectModel(User.name) private userModel: Model<UserDocument>
   ) {}
 
   async create(user: Partial<User>): Promise<UserDocument> {
@@ -20,7 +18,8 @@ export class UsersRepository {
     return this.userModel.find().exec();
   }
 
-  async findOne(filterQuery: any): Promise<UserDocument | null> {
-    return this.userModel.findOne(filterQuery).exec();
+  async findOne(filterQuery: mongo.Filter<User>): Promise<UserDocument | null> {
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
+    return this.userModel.findOne(filterQuery as any).exec();
   }
 }

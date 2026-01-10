@@ -40,14 +40,19 @@ describe('AuthenticationController', () => {
       const user = { _id: '1', email: 'test@example.com' };
       const token = { access_token: 'jwt_token' };
 
-      jest.spyOn(authService, 'validateUser').mockResolvedValue(user as unknown as UserDocument);
+      jest
+        .spyOn(authService, 'validateUser')
+        .mockResolvedValue(user as unknown as UserDocument);
       jest.spyOn(authService, 'login').mockResolvedValue(token);
 
       expect(await controller.login(loginDto)).toBe(token);
     });
 
     it('should throw RpcException for invalid credentials', async () => {
-      const loginDto = { email: 'test@example.com', password: 'wrong_password' };
+      const loginDto = {
+        email: 'test@example.com',
+        password: 'wrong_password',
+      };
       jest.spyOn(authService, 'validateUser').mockResolvedValue(null);
 
       await expect(controller.login(loginDto)).rejects.toThrow(RpcException);

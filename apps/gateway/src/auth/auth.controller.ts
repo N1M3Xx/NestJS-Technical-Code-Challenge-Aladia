@@ -1,4 +1,11 @@
-import { Body, Controller, Get, Post, UseGuards, UseInterceptors } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Get,
+  Post,
+  UseGuards,
+  UseInterceptors,
+} from '@nestjs/common';
 import { ApiTags, ApiOperation, ApiBearerAuth } from '@nestjs/swagger';
 import { CreateUserDto, UserResponseDto, LoginDto } from '@app/common';
 import { AuthService } from './auth.service';
@@ -14,9 +21,9 @@ export class AuthController {
   @Post('register')
   @ApiOperation({ summary: 'Register a new user' })
   register(@Body() createUserDto: CreateUserDto) {
-    return this.authService.register(createUserDto).pipe(
-      map((user) => new UserResponseDto(user as Partial<UserResponseDto>)),
-    );
+    return this.authService
+      .register(createUserDto)
+      .pipe(map((user) => new UserResponseDto(user)));
   }
 
   @Post('login')
@@ -32,8 +39,8 @@ export class AuthController {
   @CacheTTL(60)
   @ApiOperation({ summary: 'Get all users' })
   getUsers() {
-    return this.authService.getUsers().pipe(
-      map((users) => users.map((user) => new UserResponseDto(user))),
-    );
+    return this.authService
+      .getUsers()
+      .pipe(map((users) => users.map((user) => new UserResponseDto(user))));
   }
 }

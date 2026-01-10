@@ -9,8 +9,7 @@ import { Logger } from '@nestjs/common';
 async function bootstrap() {
   const app = await NestFactory.create(GatewayModule);
   const configService = app.get(ConfigService);
-  const port = configService.get<number>('PORT') ?? 8000;
-
+  const port = configService.getOrThrow<number>('PORT');
 
   app.useGlobalPipes(new ValidationPipe({ whitelist: true }));
   app.useGlobalInterceptors(new ClassSerializerInterceptor(app.get(Reflector)));
@@ -28,4 +27,6 @@ async function bootstrap() {
   await app.listen(port);
   Logger.log(`Gateway is running on port ${port}`);
 }
-bootstrap();
+bootstrap().catch((err) => {
+  Logger.error(err);
+});

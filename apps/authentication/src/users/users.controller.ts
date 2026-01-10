@@ -12,15 +12,19 @@ export class UsersController {
   async create(@Payload() createUserDto: CreateUserDto) {
     const user = await this.usersService.create(createUserDto);
     const userObj = user.toObject ? user.toObject() : user;
-    return plainToInstance(UserResponseDto, userObj, { excludeExtraneousValues: true });
+    return plainToInstance(UserResponseDto, userObj, {
+      excludeExtraneousValues: true,
+    });
   }
 
   @MessagePattern({ cmd: 'find_all_users' })
   async findAll() {
     const users = await this.usersService.findAll();
     return users.map((user) => {
-        const userObj = user.toObject ? user.toObject() : user;
-        return plainToInstance(UserResponseDto, userObj, { excludeExtraneousValues: true });
+      const userObj = user.toObject ? user.toObject() : user;
+      return plainToInstance(UserResponseDto, userObj, {
+        excludeExtraneousValues: true,
+      });
     });
   }
 }

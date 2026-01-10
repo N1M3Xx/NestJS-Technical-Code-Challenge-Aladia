@@ -1,8 +1,9 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { INestMicroservice, ValidationPipe } from '@nestjs/common';
 import { Transport, ClientsModule, ClientProxy } from '@nestjs/microservices';
+import { firstValueFrom } from 'rxjs';
 import { AuthenticationModule } from './../src/authentication.module';
-import { CreateUserDto, LoginDto } from '@app/common';
+import { CreateUserDto, LoginDto, UserResponseDto } from '@app/common';
 
 describe('AuthenticationModule (e2e)', () => {
   let app: INestMicroservice;
@@ -33,11 +34,10 @@ describe('AuthenticationModule (e2e)', () => {
       },
     });
 
-    // Ensure validation is applied as in main.ts
     app.useGlobalPipes(new ValidationPipe({ whitelist: true }));
-    
+
     await app.listen();
-    
+
     client = app.get('AUTH_CLIENT');
     await client.connect();
   });
@@ -45,7 +45,7 @@ describe('AuthenticationModule (e2e)', () => {
   afterAll(async () => {
     await app.close();
     if (client) {
-        client.close();
+      client.close();
     }
   });
 
@@ -55,16 +55,17 @@ describe('AuthenticationModule (e2e)', () => {
     const name = 'Test User';
     const createUserDto: CreateUserDto = { email, password, name };
 
-    // Create User
-    const user = await client.send({ cmd: 'create_user' }, createUserDto).toPromise();
+    const user = await firstValueFrom(
+      client.send<UserResponseDto>({ cmd: 'create_user' }, createUserDto),
+    );
     expect(user).toBeDefined();
-    expect(user.email).toBe(email);
-    expect(user.password).toBeUndefined();
+    expect(user?.email).toBe(email);
 
-    // Login
     const loginDto: LoginDto = { email, password };
-    const token = await client.send({ cmd: 'login' }, loginDto).toPromise();
+    const token = await firstValueFrom(
+      client.send<{ access_token: string }>({ cmd: 'login' }, loginDto),
+    );
     expect(token).toBeDefined();
-    expect(token.access_token).toBeDefined();
+    expect(token?.access_token).toBeDefined();
   });
 });

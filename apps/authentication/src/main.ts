@@ -7,8 +7,8 @@ import { Logger, ValidationPipe } from '@nestjs/common';
 async function bootstrap() {
   const app = await NestFactory.create(AuthenticationModule);
   const configService = app.get(ConfigService);
-  const host = configService.get<string>('AUTH_HOST') ?? '0.0.0.0';
-  const port = configService.get<number>('AUTH_PORT') ?? 3001;
+  const host = configService.getOrThrow<string>('AUTH_HOST');
+  const port = configService.getOrThrow<number>('AUTH_PORT');
 
   app.useGlobalPipes(new ValidationPipe({ whitelist: true, transform: true }));
 
@@ -21,6 +21,8 @@ async function bootstrap() {
   });
 
   await app.startAllMicroservices();
-  Logger.log(`Authentication microservice is listening on port ${port}`);
+  Logger.log(`Authentication microservice is listening on ${host}:${port}`);
 }
-bootstrap();
+bootstrap().catch((err) => {
+  Logger.error(err);
+});

@@ -1,6 +1,6 @@
 import { Module } from '@nestjs/common';
 import { ClientsModule, Transport } from '@nestjs/microservices';
-import { ConfigModule, ConfigService } from '@nestjs/config';
+import { ConfigService } from '@nestjs/config';
 import { AUTH_SERVICE } from '../constants';
 import { NetworkingService } from './networking.service';
 
@@ -12,8 +12,8 @@ import { NetworkingService } from './networking.service';
         useFactory: (configService: ConfigService) => ({
           transport: Transport.TCP,
           options: {
-            host: configService.get('AUTH_HOST', 'localhost'),
-            port: configService.get('AUTH_PORT', 3001),
+            host: configService.get<string>('AUTH_HOST'),
+            port: configService.get<number>('AUTH_PORT'),
           },
         }),
         inject: [ConfigService],

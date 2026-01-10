@@ -7,7 +7,10 @@ import { Observable } from 'rxjs';
 export class NetworkingService {
   constructor(@Inject(AUTH_SERVICE) private readonly client: ClientProxy) {}
 
-  send<TResult = unknown, TInput = unknown>(pattern: unknown, data: TInput): Observable<TResult> {
+  send<TResult = unknown, TInput = unknown>(
+    pattern: unknown,
+    data: TInput,
+  ): Observable<TResult> {
     return this.client.send<TResult, TInput>(pattern, data);
   }
 

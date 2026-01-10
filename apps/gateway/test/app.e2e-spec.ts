@@ -25,18 +25,22 @@ describe('GatewayController (e2e)', () => {
   });
 
   it('/auth/register (POST)', () => {
-    networkingService.send.mockReturnValue(of({ _id: '1', email: 'test@test.com', name: 'Test' }));
+    networkingService.send.mockReturnValue(
+      of({ _id: '1', email: 'test@test.com', name: 'Test' }),
+    );
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
     return request(app.getHttpServer())
       .post('/auth/register')
       .send({ email: 'test@test.com', password: 'password123', name: 'Test' })
       .expect(201)
       .expect((res) => {
-        expect(res.body.email).toEqual('test@test.com');
+        expect((res.body as { email: string }).email).toEqual('test@test.com');
       });
   });
 
   it('/auth/login (POST)', () => {
     networkingService.send.mockReturnValue(of({ access_token: 'jwt_token' }));
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
     return request(app.getHttpServer())
       .post('/auth/login')
       .send({ email: 'test@test.com', password: 'password123' })

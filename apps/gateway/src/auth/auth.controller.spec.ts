@@ -3,6 +3,7 @@ import { AuthController } from './auth.controller';
 import { AuthService } from './auth.service';
 import { of } from 'rxjs';
 import { UserResponseDto } from '@app/common';
+import { CACHE_MANAGER } from '@nestjs/cache-manager';
 
 describe('AuthController', () => {
   let controller: AuthController;
@@ -18,6 +19,14 @@ describe('AuthController', () => {
             register: jest.fn(),
             login: jest.fn(),
             getUsers: jest.fn(),
+          },
+        },
+        {
+          provide: CACHE_MANAGER,
+          useValue: {
+            get: jest.fn(),
+            set: jest.fn(),
+            del: jest.fn(),
           },
         },
       ],
@@ -37,7 +46,7 @@ describe('AuthController', () => {
       const result = { id: '1', ...dto };
       jest.spyOn(authService, 'register').mockReturnValue(of(result));
 
-      controller.register(dto).subscribe(res => {
+      controller.register(dto).subscribe((res) => {
         expect(res).toBeInstanceOf(UserResponseDto);
         expect(res.email).toBe(dto.email);
         done();
@@ -53,6 +62,7 @@ describe('AuthController', () => {
 
       controller.login(dto).subscribe((res) => {
         expect(res).toBe(token);
+        // eslint-disable-next-line @typescript-eslint/unbound-method
         expect(authService.login).toHaveBeenCalledWith(dto);
         done();
       });

@@ -37,9 +37,5 @@ lerna-debug.log*
 .env
 .env.test
 
-# NestJS
-nest-cli.json
-package-lock.json
-
 # Extensions
 .prettierrc

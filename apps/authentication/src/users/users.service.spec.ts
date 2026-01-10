@@ -38,7 +38,11 @@ describe('UsersService', () => {
 
   describe('create', () => {
     it('should hash password and create user', async () => {
-      const createUserDto = { email: 'test@test.com', password: 'password', name: 'Test' };
+      const createUserDto = {
+        email: 'test@test.com',
+        password: 'password',
+        name: 'Test',
+      };
       const savedUser = { ...createUserDto, password: 'hashed_password' };
 
       (bcrypt.genSalt as jest.Mock).mockResolvedValue('salt');
@@ -47,11 +51,14 @@ describe('UsersService', () => {
 
       await service.create(createUserDto);
 
-      expect(repository.create).toHaveBeenCalledWith(expect.objectContaining({
-        email: createUserDto.email,
-        name: createUserDto.name,
-        password: 'hashed_password',
-      }));
+      // eslint-disable-next-line @typescript-eslint/unbound-method
+      expect(repository.create).toHaveBeenCalledWith(
+        expect.objectContaining({
+          email: createUserDto.email,
+          name: createUserDto.name,
+          password: 'hashed_password',
+        }),
+      );
     });
   });
 
@@ -70,7 +77,10 @@ describe('UsersService', () => {
       (repository.findOne as jest.Mock).mockResolvedValue(user);
       (bcrypt.compare as jest.Mock).mockResolvedValue(false);
 
-      const result = await service.validateUser('test@test.com', 'wrong_password');
+      const result = await service.validateUser(
+        'test@test.com',
+        'wrong_password',
+      );
       expect(result).toBeNull();
     });
   });
