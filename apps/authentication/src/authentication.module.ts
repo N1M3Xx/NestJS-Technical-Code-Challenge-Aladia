@@ -1,13 +1,13 @@
-import { Module } from '@nestjs/common';
-import { MongooseModule } from '@nestjs/mongoose';
-import { ConfigModule, ConfigService } from '@nestjs/config';
-import { envValidationSchema } from '@app/config';
+import { Module } from "@nestjs/common";
+import { MongooseModule } from "@nestjs/mongoose";
+import { ConfigModule, ConfigService } from "@nestjs/config";
+import { envValidationSchema } from "@app/config";
 
-import { AuthenticationController } from './authentication.controller';
-import { AuthenticationService } from './authentication.service';
-import { UsersModule } from './users/users.module';
-import { JwtModule } from '@nestjs/jwt';
-import { LoggerModule } from '@app/common';
+import { AuthenticationController } from "./authentication.controller";
+import { AuthenticationService } from "./authentication.service";
+import { UsersModule } from "./users/users.module";
+import { JwtModule } from "@nestjs/jwt";
+import { LoggerModule } from "@app/common";
 
 @Module({
   imports: [
@@ -15,21 +15,21 @@ import { LoggerModule } from '@app/common';
     ConfigModule.forRoot({
       isGlobal: true,
       validationSchema: envValidationSchema,
-      envFilePath: './.env',
+      envFilePath: "./.env",
     }),
     MongooseModule.forRootAsync({
       imports: [ConfigModule],
       useFactory: (configService: ConfigService) => ({
-        uri: configService.get<string>('MONGODB_URI'),
+        uri: configService.get<string>("MONGODB_URI"),
       }),
       inject: [ConfigService],
     }),
     JwtModule.registerAsync({
       imports: [ConfigModule],
       useFactory: (configService: ConfigService) => ({
-        secret: configService.getOrThrow<string>('JWT_SECRET'),
+        secret: configService.getOrThrow<string>("JWT_SECRET"),
         signOptions: {
-          expiresIn: configService.getOrThrow<number>('JWT_EXPIRATION'),
+          expiresIn: configService.getOrThrow<number>("JWT_EXPIRATION"),
         },
       }),
       inject: [ConfigService],

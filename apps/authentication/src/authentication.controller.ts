@@ -1,7 +1,7 @@
-import { Controller } from '@nestjs/common';
-import { MessagePattern, Payload, RpcException } from '@nestjs/microservices';
-import { LoginDto, LoggerService } from '@app/common';
-import { AuthenticationService } from './authentication.service';
+import { Controller } from "@nestjs/common";
+import { MessagePattern, Payload, RpcException } from "@nestjs/microservices";
+import { LoginDto, LoggerService } from "@app/common";
+import { AuthenticationService } from "./authentication.service";
 
 @Controller()
 export class AuthenticationController {
@@ -10,7 +10,7 @@ export class AuthenticationController {
     private readonly logger: LoggerService,
   ) {}
 
-  @MessagePattern({ cmd: 'login' })
+  @MessagePattern({ cmd: "login" })
   async login(@Payload() data: LoginDto) {
     this.logger.log(`Logging in user ${data.email}`);
     const user = await this.authenticationService.validateUser(
@@ -18,7 +18,10 @@ export class AuthenticationController {
       data.password,
     );
     if (!user) {
-      throw new RpcException('Invalid credentials');
+      throw new RpcException({
+        statusCode: 401,
+        message: "Invalid credentials",
+      });
     }
     return this.authenticationService.login(user);
   }

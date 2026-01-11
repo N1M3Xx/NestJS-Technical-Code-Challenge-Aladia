@@ -1,0 +1,52 @@
+Video Walkthrough Script
+
+1. Introduction (30 seconds - 1 minute)
+
+Hi, I'm Gonzalo Perez Brisco and this is the presentation of my project for the NestJS Technical Code Challenge.
+The goal was to build a NestJS microservices backend organized in a monorepo, separating public HTTP logic from business logic and persistence.
+The system consists of an API Gateway and an Authentication microservice, which communicate internally via TCP.
+
+2. Architecture and File Structure (2-3 minutes)
+
+I used the NestJS Monorepo mode. Let's look at the structure:
+In the apps folder, we have the two main applications:
+- Gateway: This is the public entry point. It handles HTTP requests, validation, caching, and Swagger documentation. It doesn't contain complex business logic but delegates to microservices.
+- Authentication: This is the microservice responsible for user management and the database. It doesn't expose HTTP but listens for TCP messages.
+
+In the libs folder, I centralized shared code:
+- In common: you find DTOs (like CreateUserDto), interfaces, and decorators shared between apps.
+- In config: centralized environment variable management.
+
+3. Code Walkthrough (3-5 minutes)
+
+Let's start with the Gateway (apps/gateway):
+In the AuthController of the gateway, we have REST endpoints like /auth/register and /auth/users.
+I implemented:
+- Validation: Using class-validator via DTOs imported from the shared library.
+- Swagger: Each endpoint is documented with ApiOperation and ApiTags decorators.
+- Security: The getUsers endpoint is protected by a JwtAuthGuard and requires a Bearer token.
+- Caching: I added a CacheInterceptor to reduce database load for frequent requests.
+
+The gateway service uses the NestJS ClientProxy pattern to send messages to the authentication microservice via TCP.
+
+Moving to the Authentication Microservice (apps/authentication):
+Here we find the controller which, instead of handling HTTP, uses MessagePattern to respond to TCP messages sent by the gateway.
+The persistence logic is in UsersService, which interacts directly with the database (MongoDB/Mongoose).
+
+4. API Demo with Postman (2-3 minutes)
+
+Let's see the system in action.
+1. Registration: I call POST /auth/register with a new user. Validation works if I send incorrect data.
+2. Login: I log in to receive the JWT.
+3. Get Users: I try to call /auth/users without a token (I receive 401 Unauthorized). Now I insert the token and receive the user list. Note the speed of the second call thanks to caching.
+
+5. Docker and Setup (1-2 minutes)
+
+To facilitate deployment and local development, I containerized everything.
+For development specifically, I highly recommend using the Dev Container configuration included in the project, which provides a consistent environment out of the box.
+In the docker-compose.yml file, I define services for the gateway, authentication service, and MongoDB database.
+Just a docker-compose up command is enough to start the entire infrastructure.
+
+6. Conclusion
+To conclude, although this is my first project following this specific structure, I believe this architecture ensures scalability and separation of concerns. The code is available on the provided GitHub repository. Thank you for watching.
+

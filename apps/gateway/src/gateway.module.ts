@@ -1,15 +1,15 @@
-import { Module } from '@nestjs/common';
-import { ConfigModule, ConfigService } from '@nestjs/config';
-import { GatewayController } from './gateway.controller';
-import { GatewayService } from './gateway.service';
-import { AuthModule } from './auth/auth.module';
-import { HealthModule } from './health/health.module';
-import { ThrottlerModule, ThrottlerGuard } from '@nestjs/throttler';
-import { APP_GUARD } from '@nestjs/core';
-import { LoggerModule } from '@app/common';
-import { envValidationSchema } from '@app/config';
-import { CacheModule } from '@nestjs/cache-manager';
-import * as redisStore from 'cache-manager-redis-store';
+import { Module } from "@nestjs/common";
+import { ConfigModule, ConfigService } from "@nestjs/config";
+import { GatewayController } from "./gateway.controller";
+import { GatewayService } from "./gateway.service";
+import { AuthModule } from "./auth/auth.module";
+import { HealthModule } from "./health/health.module";
+import { ThrottlerModule, ThrottlerGuard } from "@nestjs/throttler";
+import { APP_GUARD } from "@nestjs/core";
+import { LoggerModule } from "@app/common";
+import { envValidationSchema } from "@app/config";
+import { CacheModule } from "@nestjs/cache-manager";
+import * as redisStore from "cache-manager-redis-store";
 
 @Module({
   imports: [
@@ -17,7 +17,7 @@ import * as redisStore from 'cache-manager-redis-store';
     ConfigModule.forRoot({
       isGlobal: true,
       validationSchema: envValidationSchema,
-      envFilePath: './.env',
+      envFilePath: "./.env",
     }),
     ThrottlerModule.forRoot([
       {
@@ -30,8 +30,8 @@ import * as redisStore from 'cache-manager-redis-store';
       imports: [ConfigModule],
       useFactory: (configService: ConfigService) => ({
         store: redisStore,
-        host: configService.get('REDIS_HOST'),
-        port: configService.get('REDIS_PORT'),
+        host: configService.get("REDIS_HOST"),
+        port: configService.get("REDIS_PORT"),
         ttl: 300,
       }),
       inject: [ConfigService],

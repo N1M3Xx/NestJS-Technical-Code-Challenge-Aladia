@@ -1,14 +1,14 @@
-import { Controller } from '@nestjs/common';
-import { MessagePattern, Payload } from '@nestjs/microservices';
-import { UsersService } from './users.service';
-import { CreateUserDto, UserResponseDto } from '@app/common';
-import { plainToInstance } from 'class-transformer';
+import { Controller } from "@nestjs/common";
+import { MessagePattern, Payload } from "@nestjs/microservices";
+import { UsersService } from "./users.service";
+import { CreateUserDto, UserResponseDto } from "@app/common";
+import { plainToInstance } from "class-transformer";
 
 @Controller()
 export class UsersController {
   constructor(private readonly usersService: UsersService) {}
 
-  @MessagePattern({ cmd: 'create_user' })
+  @MessagePattern({ cmd: "create_user" })
   async create(@Payload() createUserDto: CreateUserDto) {
     const user = await this.usersService.create(createUserDto);
     const userObj = user.toObject ? user.toObject() : user;
@@ -17,7 +17,7 @@ export class UsersController {
     });
   }
 
-  @MessagePattern({ cmd: 'find_all_users' })
+  @MessagePattern({ cmd: "find_all_users" })
   async findAll() {
     const users = await this.usersService.findAll();
     return users.map((user) => {

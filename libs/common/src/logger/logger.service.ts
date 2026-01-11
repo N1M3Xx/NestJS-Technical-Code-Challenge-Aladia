@@ -2,7 +2,7 @@ import {
   Injectable,
   LoggerService as NestLoggerService,
   Logger,
-} from '@nestjs/common';
+} from "@nestjs/common";
 
 @Injectable()
 export class LoggerService implements NestLoggerService {

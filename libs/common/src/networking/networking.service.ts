@@ -1,7 +1,7 @@
-import { Inject, Injectable } from '@nestjs/common';
-import { ClientProxy } from '@nestjs/microservices';
-import { AUTH_SERVICE } from '../constants';
-import { Observable } from 'rxjs';
+import { Inject, Injectable } from "@nestjs/common";
+import { ClientProxy } from "@nestjs/microservices";
+import { AUTH_SERVICE } from "../constants";
+import { Observable } from "rxjs";
 
 @Injectable()
 export class NetworkingService {

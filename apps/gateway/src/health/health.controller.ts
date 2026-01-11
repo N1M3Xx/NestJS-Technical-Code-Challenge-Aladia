@@ -1,13 +1,13 @@
-import { Controller, Get } from '@nestjs/common';
+import { Controller, Get } from "@nestjs/common";
 import {
   HealthCheck,
   HealthCheckService,
   MicroserviceHealthIndicator,
-} from '@nestjs/terminus';
-import { Transport } from '@nestjs/microservices';
-import { ConfigService } from '@nestjs/config';
+} from "@nestjs/terminus";
+import { Transport } from "@nestjs/microservices";
+import { ConfigService } from "@nestjs/config";
 
-@Controller('health')
+@Controller("health")
 export class HealthController {
   constructor(
     private health: HealthCheckService,
@@ -20,11 +20,11 @@ export class HealthController {
   check() {
     return this.health.check([
       () =>
-        this.microservice.pingCheck('authentication', {
+        this.microservice.pingCheck("authentication", {
           transport: Transport.TCP,
           options: {
-            host: this.configService.get<string>('AUTH_HOST'),
-            port: this.configService.get<number>('AUTH_PORT'),
+            host: this.configService.get<string>("AUTH_HOST"),
+            port: this.configService.get<number>("AUTH_PORT"),
           },
         }),
     ]);
